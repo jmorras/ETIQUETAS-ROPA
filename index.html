@@ -150,15 +150,16 @@
 
   /* Toggle de subtipo (Termoadhesivas / De Coser / EC-100-2026) */
   .subtype-toggle {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
   }
 
   .subtype-chip {
-    flex: 1 1 28%;
-    min-width: 100px;
-    padding: 10px 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 10px;
     border: 1.5px solid #d7e0e0;
     border-radius: 8px;
     background: var(--paper);
@@ -166,13 +167,37 @@
     font-size: 13px;
     font-weight: 600;
     line-height: 1.25;
+    text-align: left;
     cursor: pointer;
+  }
+
+  .subtype-chip.wide {
+    grid-column: 1 / -1;
+  }
+
+  .subtype-chip .num {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--field-bg);
+    color: var(--teal-dark);
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .subtype-chip.selected {
     border-color: var(--teal);
     background: #e8f5f4;
     color: var(--teal-dark);
+  }
+
+  .subtype-chip.selected .num {
+    background: var(--teal);
+    color: white;
   }
 
   /* Modelo picker (vinilo / EC-100-2026) */
@@ -438,6 +463,21 @@
     color: #6d7a7a;
   }
 
+  .store-notice {
+    font-size: 12px;
+    line-height: 1.55;
+    color: #7a5b12;
+    text-align: center;
+    background: #fff6e0;
+    border-top: 1.5px solid #f3e0a6;
+    padding: 14px 20px 22px;
+    margin: 0;
+  }
+
+  .store-notice strong {
+    color: #5c4409;
+  }
+
   .hidden { display: none !important; }
 </style>
 </head>
@@ -457,19 +497,19 @@
         <label>Tipo</label>
         <div class="subtype-toggle">
           <button type="button" class="subtype-chip selected" id="chipTermoadhesivas" data-subtype="Termoadhesivas">
-            Termoadhesivas
+            <span class="num">1</span> Termoadhesivas
           </button>
           <button type="button" class="subtype-chip" id="chipDeCoser" data-subtype="De Coser">
-            De Coser
+            <span class="num">2</span> De Coser
           </button>
-          <button type="button" class="subtype-chip" id="chipEC100" data-subtype="EC-100-2026">
-            Etiquetas de color termoadhesivas EC-100-2026
+          <button type="button" class="subtype-chip wide" id="chipEC100" data-subtype="EC-100-2026">
+            <span class="num">3</span> Etiquetas de color termoadhesivas EC-100-2026
           </button>
         </div>
       </div>
 
       <div class="field">
-        <label for="texto">Texto</label>
+        <label for="texto">Nombre ó texto libre</label>
         <input type="text" id="texto" maxlength="25" placeholder="Nombre para la etiqueta" value="La Mercería de La Almunia">
         <div class="charcount" id="charcount">0 / 25</div>
       </div>
@@ -514,6 +554,10 @@
 
     <p class="privacy-note">
       <strong>Protección de datos:</strong> está usted en comunicación con un pequeño comercio. Sus datos se usan únicamente para preparar y gestionar este pedido — no vamos a mandarle publicidad.
+    </p>
+
+    <p class="store-notice">
+      ⚠️ Esta web sirve para ayudar a preparar pedidos que se recogen y abonan en la <strong>tienda física</strong>, situada en Calle López Urraca, 15 · La Almunia de Doña Godina. Por el momento no aceptamos pedidos online.
     </p>
   </div>
 
