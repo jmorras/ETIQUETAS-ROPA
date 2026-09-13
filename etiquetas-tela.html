@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Etiquetas de Tela · La Mercería de La Almunia</title>
+<style>
+  :root {
+    --teal: #2f9c99;
+    --teal-dark: #1f7a78;
+    --pink: #c94f7c;
+    --pink-dark: #a83c65;
+    --ink: #2b3a42;
+    --paper: #ffffff;
+    --field-bg: #eef2f2;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--field-bg);
+    color: var(--ink);
+    display: flex;
+    justify-content: center;
+    padding: 0 0 32px;
+  }
+
+  .sheet {
+    width: 100%;
+    max-width: 480px;
+    background: var(--paper);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--teal);
+    padding: 20px 20px 0;
+    color: white;
+  }
+
+  header .eyebrow {
+    font-size: 13px;
+    opacity: 0.85;
+    margin: 0 0 4px;
+  }
+
+  header h1 {
+    margin: 0 0 16px;
+    font-size: 18px;
+    line-height: 1.3;
+    font-weight: 700;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+  }
+
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.75);
+    background: rgba(255,255,255,0.12);
+    border: none;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+  }
+
+  .tab.active {
+    background: var(--paper);
+    color: var(--teal-dark);
+  }
+
+  main {
+    padding: 22px 20px 8px;
+  }
+
+  .field {
+    margin-bottom: 18px;
+  }
+
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--teal-dark);
+    margin-bottom: 6px;
+  }
+
+  .field input[type="text"],
+  .field select {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 16px;
+    border: 1.5px solid #d7e0e0;
+    border-radius: 8px;
+    background: var(--paper);
+    color: var(--ink);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .field input[type="text"]:focus,
+  .field select:focus {
+    outline: none;
+    border-color: var(--teal);
+  }
+
+  .charcount {
+    text-align: right;
+    font-size: 12px;
+    color: #7c8a8a;
+    margin-top: 4px;
+  }
+
+  .charcount.limit {
+    color: var(--pink-dark);
+    font-weight: 600;
+  }
+
+  .fixed-note {
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--field-bg);
+    border-radius: 8px;
+    padding: 12px 14px;
+    border: 1.5px solid #d7e0e0;
+  }
+
+  /* Modelo picker (vinilo) */
+  .modelo-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid #d7e0e0;
+    border-radius: 8px;
+    background: var(--paper);
+    cursor: pointer;
+    font-size: 15px;
+    text-align: left;
+  }
+
+  .modelo-trigger .code-pill {
+    border: 1.5px solid var(--teal-dark);
+    color: var(--teal-dark);
+    border-radius: 999px;
+    padding: 2px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .modelo-trigger .swatch {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #eee;
+    min-width: 0;
+  }
+
+  .modelo-trigger .swatch span.label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .modelo-trigger .chevron {
+    flex-shrink: 0;
+    color: #9aa7a7;
+  }
+
+  .modelo-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 30, 32, 0.45);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 50;
+  }
+
+  .modelo-overlay.open {
+    display: flex;
+  }
+
+  .modelo-sheet {
+    width: 100%;
+    max-width: 480px;
+    background: var(--paper);
+    border-radius: 16px 16px 0 0;
+    max-height: 82vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modelo-sheet-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid #eaeeee;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modelo-sheet-header h2 {
+    font-size: 15px;
+    margin: 0;
+    color: var(--ink);
+  }
+
+  .modelo-sheet-header button {
+    border: none;
+    background: none;
+    font-size: 20px;
+    color: #9aa7a7;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px 6px;
+  }
+
+  .modelo-list {
+    overflow-y: auto;
+    padding: 10px 14px 20px;
+  }
+
+  .modelo-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .modelo-row .code-pill {
+    border: 1.5px solid var(--teal-dark);
+    color: var(--teal-dark);
+    border-radius: 999px;
+    padding: 2px 9px;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    min-width: 34px;
+    text-align: center;
+  }
+
+  .modelo-row .swatch {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border-radius: 6px;
+    border: 1px solid #e3e8e8;
+    min-width: 0;
+  }
+
+  .modelo-row.selected .swatch {
+    outline: 2px solid var(--teal);
+  }
+
+  .modelo-row .swatch .icon {
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .modelo-row .swatch .label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+
+  .preview {
+    margin-top: 6px;
+    padding: 22px 16px;
+    border: 1.5px solid #d7e0e0;
+    border-radius: 8px;
+    text-align: center;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    word-break: break-word;
+    gap: 8px;
+  }
+
+  .preview .icon {
+    font-size: 24px;
+  }
+
+  .preview span.txt {
+    font-size: 22px;
+    color: var(--ink);
+  }
+
+  .preview.font-inglesa span.txt {
+    font-family: "Brush Script MT", "Segoe Script", cursive;
+    font-size: 26px;
+  }
+
+  .preview.font-normal span.txt {
+    font-family: Georgia, "Times New Roman", serif;
+  }
+
+  .send-wrap {
+    padding: 8px 20px 28px;
+  }
+
+  .send-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 15px 18px;
+    background: var(--pink);
+    color: white;
+    text-decoration: none;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .send-btn:active {
+    background: var(--pink-dark);
+  }
+
+  .send-btn svg {
+    flex-shrink: 0;
+  }
+
+  .helper-text {
+    font-size: 12px;
+    color: #7c8a8a;
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+  <div class="sheet">
+    <header>
+      <p class="eyebrow">La Mercería de La Almunia</p>
+      <h1 id="pageTitle">Etiquetas impresas. Termoadhesivas</h1>
+      <div class="tabs">
+        <button class="tab active" data-mode="termo" id="tabTermo">Termoadhesivas</button>
+        <button class="tab" data-mode="vinilo" id="tabVinilo">Vinilo 2026</button>
+      </div>
+    </header>
+
+    <main>
+      <div class="field">
+        <label for="texto">Texto</label>
+        <input type="text" id="texto" maxlength="25" placeholder="Nombre para la etiqueta" value="La Mercería de La Almunia">
+        <div class="charcount" id="charcount">0 / 25</div>
+      </div>
+
+      <div class="field" id="letraField">
+        <label for="letra">Letra</label>
+        <select id="letra">
+          <option value="Normal">Normal</option>
+          <option value="Inglesa" selected>Inglesa</option>
+        </select>
+      </div>
+
+      <div class="field hidden" id="modeloField">
+        <label>Modelo</label>
+        <button type="button" class="modelo-trigger" id="modeloTrigger">
+          <span class="code-pill" id="modeloTriggerCode">T1</span>
+          <span class="swatch" id="modeloTriggerSwatch">
+            <span class="icon" id="modeloTriggerIcon"></span>
+            <span class="label" id="modeloTriggerLabel"></span>
+          </span>
+          <span class="chevron">▾</span>
+        </button>
+      </div>
+
+      <div class="field">
+        <label>Cantidad de veces REPETIDO el nombre</label>
+        <div class="fixed-note">100</div>
+      </div>
+
+      <div class="field">
+        <label>Vista previa</label>
+        <div class="preview font-inglesa" id="preview">
+          <span class="icon" id="previewIcon"></span>
+          <span class="txt" id="previewText">La Mercería de La Almunia</span>
+        </div>
+      </div>
+    </main>
+
+    <div class="send-wrap">
+      <a href="#" class="send-btn" id="whatsappBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.48 1.32 5l-1.4 5.12 5.24-1.38a9.9 9.9 0 0 0 4.75 1.21h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.13-2.9-7-1.88-1.88-4.36-2.95-7-2.95zm0 18.13a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.11.82.83-3.03-.2-.31a8.17 8.17 0 0 1-1.25-4.37c0-4.52 3.68-8.2 8.22-8.2 2.19 0 4.25.86 5.8 2.41a8.15 8.15 0 0 1 2.4 5.8c0 4.53-3.68 8.21-8.2 8.21zm4.5-6.15c-.25-.12-1.47-.72-1.7-.8-.23-.09-.39-.12-.56.12-.17.25-.64.8-.78.96-.14.17-.29.19-.53.06-.25-.12-1.05-.38-1.99-1.22-.74-.65-1.23-1.46-1.38-1.7-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.42-.14-.01-.3-.01-.47-.01a.9.9 0 0 0-.65.3c-.22.25-.86.84-.86 2.04 0 1.2.88 2.37 1 2.53.12.17 1.74 2.65 4.21 3.72.59.25 1.05.4 1.41.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.18-.06-.1-.23-.16-.48-.28z"/></svg>
+        <span>Enviar pedido por WhatsApp</span>
+      </a>
+      <p class="helper-text">Se abrirá WhatsApp con el pedido rellenado</p>
+    </div>
+  </div>
+
+  <!-- Selector de modelo (vinilo) -->
+  <div class="modelo-overlay" id="modeloOverlay">
+    <div class="modelo-sheet">
+      <div class="modelo-sheet-header">
+        <h2>Elige modelo</h2>
+        <button type="button" id="modeloClose">&times;</button>
+      </div>
+      <div class="modelo-list" id="modeloList"></div>
+    </div>
+  </div>
+
+  <script>
+    // ---- Datos de modelos (vinilo) ----
+    // case: 'title' | 'upper'  |  weight: 'normal' | 'bold'  |  font: 'default' | 'comic'
+    const MODELOS = [
+      { code: 'T215', icon: '🚒', case: 'title', weight: 'normal' },
+      { code: 'T216', icon: '🚓', case: 'title', weight: 'normal' },
+      { code: 'T218', icon: '🏗️', case: 'title', weight: 'normal' },
+      { code: 'T205', icon: '🦁', case: 'title', weight: 'normal' },
+      { code: 'T208', icon: '🐻', case: 'title', weight: 'normal' },
+      { code: 'T212', icon: '🦒', case: 'title', weight: 'normal' },
+      { code: 'T201', icon: '🦖', case: 'title', weight: 'normal' },
+      { code: 'T203', icon: '🦕', case: 'title', weight: 'normal' },
+      { code: 'T220', icon: '🌈', case: 'title', weight: 'normal' },
+      { code: 'T221', icon: '🐷', case: 'title', weight: 'normal' },
+      { code: 'T1',  icon: null, case: 'upper', weight: 'normal' },
+      { code: 'T2',  icon: null, case: 'upper', weight: 'normal', font: 'comic' },
+      { code: 'T3',  icon: null, case: 'upper', weight: 'bold' },
+      { code: 'T4',  icon: '👑', case: 'upper', weight: 'normal' },
+      { code: 'T5',  icon: '👧', case: 'title', weight: 'normal' },
+      { code: 'T6',  icon: '🍄', case: 'upper', weight: 'bold' },
+      { code: 'T7',  icon: '🦄', case: 'title', weight: 'normal' },
+      { code: 'T8',  icon: '🌈', case: 'upper', weight: 'normal' },
+      { code: 'T10', icon: '🐷', case: 'upper', weight: 'normal' },
+      { code: 'T11', icon: '🐺', case: 'title', weight: 'bold' },
+      { code: 'T12', icon: '🐑', case: 'upper', weight: 'normal' },
+      { code: 'T13', icon: '🐶', case: 'upper', weight: 'normal' },
+      { code: 'T14', icon: '🐺', case: 'upper', weight: 'normal' },
+      { code: 'T17', icon: '⚽', case: 'title', weight: 'bold', italic: true },
+      { code: 'T19', icon: '🚀', case: 'upper', weight: 'normal' },
+      { code: 'T20', icon: '🐨', case: 'upper', weight: 'normal' },
+      { code: 'T21', icon: '👽', case: 'upper', weight: 'normal' },
+      { code: 'T22', icon: '🚂', case: 'title', weight: 'bold' },
+      { code: 'T23', icon: '🚗', case: 'title', weight: 'bold', italic: true },
+      { code: 'T24', icon: '✨', case: 'upper', weight: 'normal', font: 'comic' },
+      { code: 'T25', icon: null, case: 'upper', weight: 'bold', bg: '#4CAF50' },
+      { code: 'T26', icon: '🐾', case: 'title', weight: 'bold', bg: '#4CAF50' },
+      { code: 'T27', icon: null, case: 'upper', weight: 'normal', bg: '#FFEE58' },
+      { code: 'T28', icon: '🏑', case: 'title', weight: 'normal', italic: true, bg: '#FFEE58' },
+      { code: 'T29', icon: '⭐', case: 'upper', weight: 'normal', bg: '#FFEE58' },
+      { code: 'T30', icon: '🐱', case: 'upper', weight: 'normal', bg: '#FFEE58' },
+      { code: 'T31', icon: null, case: 'upper', weight: 'normal', bg: '#F48FB1' },
+      { code: 'T32', icon: '⭐', case: 'upper', weight: 'normal', bg: '#F48FB1' },
+      { code: 'T34', icon: '👶', case: 'upper', weight: 'normal', bg: '#F48FB1' },
+      { code: 'T35', icon: '❤️', case: 'upper', weight: 'normal', bg: '#F48FB1' },
+      { code: 'T36', icon: '🦋', case: 'title', weight: 'normal', bg: '#F48FB1' },
+      { code: 'T37', icon: '🌸', case: 'title', weight: 'normal', bg: '#F48FB1' },
+      { code: 'T38', icon: null, case: 'upper', weight: 'bold', bg: '#000000', color: '#ffffff' },
+      { code: 'T39', icon: null, case: 'upper', weight: 'normal', bg: '#4FC3F7' },
+    ];
+
+    const textoInput = document.getElementById('texto');
+    const letraSelect = document.getElementById('letra');
+    const charcount = document.getElementById('charcount');
+    const preview = document.getElementById('preview');
+    const previewText = document.getElementById('previewText');
+    const previewIcon = document.getElementById('previewIcon');
+    const whatsappBtn = document.getElementById('whatsappBtn');
+    const pageTitle = document.getElementById('pageTitle');
+    const tabTermo = document.getElementById('tabTermo');
+    const tabVinilo = document.getElementById('tabVinilo');
+    const letraField = document.getElementById('letraField');
+    const modeloField = document.getElementById('modeloField');
+    const modeloTrigger = document.getElementById('modeloTrigger');
+    const modeloOverlay = document.getElementById('modeloOverlay');
+    const modeloClose = document.getElementById('modeloClose');
+    const modeloList = document.getElementById('modeloList');
+    const modeloTriggerCode = document.getElementById('modeloTriggerCode');
+    const modeloTriggerIcon = document.getElementById('modeloTriggerIcon');
+    const modeloTriggerLabel = document.getElementById('modeloTriggerLabel');
+
+    const WHATSAPP_NUMBER = '34679103544';
+    let mode = 'termo'; // 'termo' | 'vinilo'
+    let selectedModeloIndex = 0;
+
+    function formatTextForModelo(texto, modelo) {
+      let t = texto || '';
+      if (modelo.case === 'upper') t = t.toUpperCase();
+      return t;
+    }
+
+    function renderModeloRow(modelo, idx) {
+      const row = document.createElement('button');
+      row.type = 'button';
+      row.className = 'modelo-row' + (idx === selectedModeloIndex ? ' selected' : '');
+
+      const pill = document.createElement('span');
+      pill.className = 'code-pill';
+      pill.textContent = modelo.code;
+
+      const swatch = document.createElement('span');
+      swatch.className = 'swatch';
+      swatch.style.background = modelo.bg || '#ffffff';
+
+      if (modelo.icon) {
+        const icon = document.createElement('span');
+        icon.className = 'icon';
+        icon.textContent = modelo.icon;
+        swatch.appendChild(icon);
+      }
+
+      const label = document.createElement('span');
+      label.className = 'label';
+      label.textContent = formatTextForModelo(textoInput.value || 'La Mercería de La Almunia', modelo);
+      label.style.fontWeight = modelo.weight === 'bold' ? '700' : '400';
+      label.style.fontStyle = modelo.italic ? 'italic' : 'normal';
+      label.style.color = modelo.color || '#2b3a42';
+      if (modelo.font === 'comic') {
+        label.style.fontFamily = '"Comic Sans MS", "Comic Sans", cursive';
+      }
+      swatch.appendChild(label);
+
+      row.appendChild(pill);
+      row.appendChild(swatch);
+
+      row.addEventListener('click', () => {
+        selectedModeloIndex = idx;
+        updateModeloTrigger();
+        renderModeloList();
+        updatePreview();
+        modeloOverlay.classList.remove('open');
+      });
+
+      return row;
+    }
+
+    function renderModeloList() {
+      modeloList.innerHTML = '';
+      MODELOS.forEach((m, idx) => modeloList.appendChild(renderModeloRow(m, idx)));
+    }
+
+    function updateModeloTrigger() {
+      const m = MODELOS[selectedModeloIndex];
+      modeloTriggerCode.textContent = m.code;
+      modeloTriggerIcon.textContent = m.icon || '';
+      modeloTriggerLabel.textContent = formatTextForModelo(textoInput.value || 'La Mercería de La Almunia', m);
+      modeloTriggerLabel.style.fontWeight = m.weight === 'bold' ? '700' : '400';
+      modeloTriggerLabel.style.fontStyle = m.italic ? 'italic' : 'normal';
+      modeloTriggerLabel.style.color = m.color || '#2b3a42';
+      modeloTriggerLabel.style.fontFamily = m.font === 'comic' ? '"Comic Sans MS", "Comic Sans", cursive' : '';
+      document.getElementById('modeloTriggerSwatch').style.background = m.bg || '#ffffff';
+    }
+
+    function updatePreview() {
+      const texto = textoInput.value;
+      charcount.textContent = texto.length + ' / 25';
+      charcount.classList.toggle('limit', texto.length >= 25);
+
+      if (mode === 'termo') {
+        previewIcon.textContent = '';
+        previewText.textContent = texto || '—';
+        preview.style.background = '';
+        preview.style.color = '';
+        preview.classList.remove('font-normal', 'font-inglesa');
+        preview.classList.add(letraSelect.value === 'Inglesa' ? 'font-inglesa' : 'font-normal');
+        previewText.style.fontWeight = '';
+        previewText.style.fontStyle = '';
+        previewText.style.fontFamily = '';
+      } else {
+        const m = MODELOS[selectedModeloIndex];
+        preview.classList.remove('font-normal', 'font-inglesa');
+        previewIcon.textContent = m.icon || '';
+        previewText.textContent = formatTextForModelo(texto, m) || '—';
+        preview.style.background = m.bg || '#ffffff';
+        preview.style.color = m.color || 'var(--ink)';
+        previewText.style.fontWeight = m.weight === 'bold' ? '700' : '400';
+        previewText.style.fontStyle = m.italic ? 'italic' : 'normal';
+        previewText.style.fontFamily = m.font === 'comic' ? '"Comic Sans MS", "Comic Sans", cursive' : 'inherit';
+        previewText.style.color = m.color || 'var(--ink)';
+      }
+
+      updateModeloTrigger();
+      updateWhatsappLink();
+    }
+
+    function updateWhatsappLink() {
+      const texto = textoInput.value.trim() || '(sin texto)';
+      let mensaje;
+
+      if (mode === 'termo') {
+        const letra = letraSelect.value;
+        mensaje =
+`ETIQUETA TELA
+Tipo: Termoadhesivas
+Texto: ${texto}
+Tipo de letra: ${letra}
+Cantidad: 100 (repetido)`;
+      } else {
+        const m = MODELOS[selectedModeloIndex];
+        mensaje =
+`ETIQUETA TELA
+Tipo: Vinilo Termoadhesivas 2026
+Texto: ${texto}
+Modelo: ${m.code}
+Cantidad: 100 (repetido)`;
+      }
+
+      whatsappBtn.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`;
+    }
+
+    function setMode(newMode) {
+      mode = newMode;
+      if (mode === 'termo') {
+        pageTitle.textContent = 'Etiquetas impresas. Termoadhesivas';
+        tabTermo.classList.add('active');
+        tabVinilo.classList.remove('active');
+        letraField.classList.remove('hidden');
+        modeloField.classList.add('hidden');
+      } else {
+        pageTitle.textContent = 'Etiquetas impresas. Vinilo Termoadhesivas 2026';
+        tabVinilo.classList.add('active');
+        tabTermo.classList.remove('active');
+        letraField.classList.add('hidden');
+        modeloField.classList.remove('hidden');
+      }
+      updatePreview();
+    }
+
+    tabTermo.addEventListener('click', () => setMode('termo'));
+    tabVinilo.addEventListener('click', () => setMode('vinilo'));
+
+    modeloTrigger.addEventListener('click', () => {
+      renderModeloList();
+      modeloOverlay.classList.add('open');
+    });
+    modeloClose.addEventListener('click', () => modeloOverlay.classList.remove('open'));
+    modeloOverlay.addEventListener('click', (e) => {
+      if (e.target === modeloOverlay) modeloOverlay.classList.remove('open');
+    });
+
+    textoInput.addEventListener('input', updatePreview);
+    letraSelect.addEventListener('change', updatePreview);
+
+    renderModeloList();
+    updatePreview();
+  </script>
+</body>
+</html>
